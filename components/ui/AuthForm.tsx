@@ -1,13 +1,13 @@
-'use client';
-import Image from 'next/image'
-import Link from 'next/link'
-import React, { useState } from 'react'
+"use client";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useState } from "react";
 
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,37 +16,38 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import CustomInput from './CustomInput';
-import { authFormSchema } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import CustomInput from "./CustomInput";
+import { authFormSchema } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
-  email: z.string().email()
-})
+  email: z.string().email(),
+});
 
-
-const AuthForm = ({type}: {type: string}) => {
+const AuthForm = ({ type }: { type: string }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setisLoading] = useState(false);
 
+  const formSchema = authFormSchema(type);
+
   // 1. Define your form.
-  const form = useForm<z.infer<typeof authFormSchema>>({
-    resolver: zodResolver(authFormSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      password:'0'
+      password: "0",
     },
-  })
- 
+  });
+
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof authFormSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    setisLoading(true)
-    console.log(values)
-    setisLoading(false)
+    setisLoading(true);
+    console.log(values);
+    setisLoading(false);
   }
 
   return (
@@ -78,30 +79,124 @@ const AuthForm = ({type}: {type: string}) => {
         <div className="flex flex-col gap-4">{/* PlaidLink*/}</div>
       ) : (
         <>
-        
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <CustomInput name="email" placeholder="Please enter your email" label="Email" control={form.control} />
 
-              <CustomInput name="password" placeholder="Please enter your password" label='Password' control={form.control} />
+            <form onSubmit={form.handleSubmit(onSubmit)} 
+            className="space-y-8">
+            {type ==='sign-up' && (
+              <>
 
-              <Button type="submit" className='form-btn' disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 size={20} className='animate-spin' /> &nbsp;
-                    Loading...
-                  </>
-                ): type === 'sign-in'? 'Sign In' : 'Sign Up'}
-              </Button>
+              <div className=" flex gap-4">
+
+               <CustomInput
+                name="firstName"
+                placeholder="First Name"
+                label="First Name"
+                control={form.control}
+              />
+
+              <CustomInput
+                name="lastName"
+                placeholder="Last Name"
+                label="Last Name"
+                control={form.control}
+              />
+
+              </div>
+
+
+              <CustomInput
+                name="address1"
+                placeholder="Enter your specific address"
+                label="Address"
+                control={form.control}
+              />
+
+              <div className="flex gap-4">
+
+              <CustomInput
+                name="province"
+                placeholder="ex: Gauteng"
+                label="Province"
+                control={form.control}
+              />
+
+              <CustomInput
+                name="postalCode"
+                placeholder="ex: 1911"
+                label="Postal Code"
+                control={form.control}
+              />
+
+              </div>
+
+              <div className="flex gap-4">
+              <CustomInput
+                name="dateOfBirth"
+                placeholder="yyyy-mm-dd"
+                label="Date of Birth"
+                control={form.control}
+              />
+
+              <CustomInput
+                name="idNumber"
+                placeholder="ex: 1234"
+                label="ID Number"
+                control={form.control}
+              />
+
+              </div>
+
+              </>
+            )}
+            
+              <CustomInput
+                name="email"
+                placeholder="Please enter your email"
+                label="Email"
+                control={form.control}
+              />
+
+              <CustomInput
+                name="password"
+                placeholder="Please enter your password"
+                label="Password"
+                control={form.control}
+              />
+              <div className="flex flex-col gap-4">
+                <Button type="submit" className="form-btn" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin" /> &nbsp;
+                      Loading...
+                    </>
+                  ) : type === "sign-in" ? (
+                    "Sign In"
+                  ) : (
+                    "Sign Up"
+                  )}
+                </Button>
+              </div>
             </form>
           </Form>
 
-          
-
+          <footer className=" flex justify-center gap-1">
+            <p className="text-14 font-normal text-gray-600">
+              {type === "sign-in"
+                ? "Don't have an account?"
+                : "Already have an account?"}
+            </p>
+            <Link
+              className="form-link"
+              href={type === "sign-in" ? "/sign-up" : "/sign-in"}
+            >
+              {type === "sign-in" ? "Sign up" : "Sign in"}
+            </Link>
+          </footer>
         </>
       )}
     </section>
   );
-}
+};
 
-export default AuthForm
+export default AuthForm;
