@@ -21,12 +21,15 @@ import { Input } from "@/components/ui/input";
 import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import { signIn, signUp } from "@/lib/actions/user.actions";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email(),
 });
 
 const AuthForm = ({ type }: { type: string }) => {
+ const router = useRouter();
   const [user, setUser] = useState(null);
   const [isLoading, setisLoading] = useState(false);
 
@@ -37,17 +40,36 @@ const AuthForm = ({ type }: { type: string }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      password: "0",
+      password: "",
     },
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setisLoading(true);
-    console.log(values);
-    setisLoading(false);
+    try {
+      // Sign Up with appwrite & create plain link token
+      
+      if(type === 'sign-up'){
+         const newUser = await signUp(data);
+         console.log(newUser);
+         setUser(newUser);
+        
+      }
+
+      // if(type === 'sign-in'){
+      //     const response = await signIn({
+      //         email: data.email,
+      //         password: data.password,
+      //     })
+
+      //     if(response) router.push('/')
+      // }
+    } catch (error) {
+      console.log(error);
+    }finally{
+      setisLoading(false);
+    }
   }
 
   return (
@@ -112,6 +134,13 @@ const AuthForm = ({ type }: { type: string }) => {
                 control={form.control}
               />
 
+              <CustomInput
+                name="city"
+                placeholder="Enter your specific city"
+                label="City"
+                control={form.control}
+              />
+
               <div className="flex gap-4">
 
               <CustomInput
@@ -170,11 +199,11 @@ const AuthForm = ({ type }: { type: string }) => {
                       <Loader2 size={20} className="animate-spin" /> &nbsp;
                       Loading...
                     </>
-                  ) : type === "sign-in" ? (
+                  ) : type === "sign-in" ? 
                     "Sign In"
-                  ) : (
+                   : 
                     "Sign Up"
-                  )}
+                  }
                 </Button>
               </div>
             </form>
