@@ -1,4 +1,4 @@
-'user server';
+'use server';
 
 import { createAdminClient, createSessionClient } from "@/appwrite";
 import { cookies } from "next/headers";
@@ -42,7 +42,9 @@ export const signUp = async (userData: SignUpParams) => {
 export async function getLoggedInUser() {
     try {
       const { account } = await createSessionClient();
-      return await account.get();
+      const user = await account.get();
+
+      return parseStringify(user);
     } catch (error) {
       return null;
     }
