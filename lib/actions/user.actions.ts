@@ -92,3 +92,18 @@ export const createLinkToken = async (user: User) => {
         console.log(error);
     }
 }
+
+export const exchangePublicToken = async ({
+    publicToken,
+    user,
+}: exchangePublicTokenProps) => {
+
+    try {
+        //exchange public token for an access token and item ID
+        const response = await plaidClient.itemPublicTokenExchange({
+            public_token: publicToken,
+        });
+    } catch (error) {
+        console.error("An error occurred while creating exchange token:", error);
+    }
+}
